@@ -73,19 +73,18 @@ class Trip {
     }
 
     /**
-     * Affichage
-     */
-    toString() {
-        return `Trip [${this.id}, ${this.name}, ${this.imageUrl}, ${this.price}]`;
-    }
-
-    /**
      * Voyage par défaut
      */
     getDefaultTrip() {
         return new Trip("rio-de-janeiro", "Rio de Janeiro", "img/rio-de-janeiro.jpg");
     }
 
+    /**
+     * Affichage
+     */
+    toString() {
+        return `Trip [${this.id}, ${this.name}, ${this.imageUrl}, ${this.price}]`;
+    }
 }
 
 // Voyage à Paris
@@ -119,3 +118,76 @@ class FreeTrip extends Trip {
 // Création d'un voyage gratuit
 const freeTrip = new FreeTrip("nantes", "Nantes", "img:nantes.jpg");
 console.log(freeTrip.toString());
+
+/**
+ * Service de voyage
+ */
+class TripService {
+    constructor() {
+        // Set of trips (id, name, imageUrl)
+        this.tripSet = new Set();
+        this.tripSet.add(new Trip('paris', 'Paris', 'img/paris.jpg'));
+        this.tripSet.add(new Trip('nantes', 'Nantes', 'img/nantes.jpg'));
+        this.tripSet.add(new Trip('rio-de-janeiro', 'Rio de Janeiro', 'img/rio-de-janeiro.jpg'));
+    }
+
+    // Recherche du nom
+    findByName(tripName) {
+        return new Promise((resolve, reject) => {
+            console.log("Searching a trip...");
+            setTimeout(() => {
+                // ici l'exécution du code est asynchrone
+                for (const trip of this.tripSet) {
+                    if (trip.name == tripName) {
+                        resolve(trip);
+                    }
+                }
+                reject(`No trip with name ${tripName}`);
+            }, 2000)
+        });
+    }
+}
+
+/**
+ * Service de prix
+ */
+class PriceService {
+    constructor() {
+        // Map of 2 trips (clé == identifiant, valeur == prix)
+        const priceMap = new Map();
+        priceMap.set({
+            id: 'paris',
+            price: 100
+        });
+        priceMap.set({
+            id: 'rio-de-janeiro',
+            price: 800
+        });
+    }
+
+    // Recherche de l'id
+    findPriceByTripId(tripId) {
+        return new Promise((resolve, reject) => {
+            console.log("Searching a price...");
+            setTimeout(() => {
+                // ici l'exécution du code est asynchrone
+                if (this.priceMap.has(tripId)) {
+                    resolve(this.priceMap.get(tripId));
+                }
+
+                reject(`No price found for id ${tripId}`);
+            }, 2000)
+        });
+    }
+}
+
+// Recherche des infos du voyage à Paris
+const parisVoyage$ = new TripService();
+parisVoyage$.findByName("Paris")
+    .then(voyage => console.log("Trip Found :", voyage))
+    .catch(err => console.log(err));
+
+const parixPrixVoyage$ = new PriceService();
+parixPrixVoyage$.findPriceByTripId("paris")
+    .then(price => console.log("Price Found : ", price))
+    .catch(err => console.log(err));
