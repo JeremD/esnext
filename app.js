@@ -138,7 +138,7 @@ class TripService {
             setTimeout(() => {
                 // ici l'exécution du code est asynchrone
                 for (const trip of this.tripSet) {
-                    if (trip.name == tripName) {
+                    if (trip.name === tripName) {
                         resolve(trip);
                     }
                 }
@@ -154,15 +154,15 @@ class TripService {
 class PriceService {
     constructor() {
         // Map of 2 trips (clé == identifiant, valeur == prix)
-        const priceMap = new Map();
-        priceMap.set({
-            id: 'paris',
-            price: 100
-        });
-        priceMap.set({
-            id: 'rio-de-janeiro',
-            price: 800
-        });
+        this.priceMap = new Map();
+        this.priceMap.set(
+            'paris',
+            100
+        );
+        this.priceMap.set(
+            'rio-de-janeiro',
+            800
+        );
     }
 
     // Recherche de l'id
@@ -183,11 +183,21 @@ class PriceService {
 
 // Recherche des infos du voyage à Paris
 const parisVoyage$ = new TripService();
+
 parisVoyage$.findByName("Paris")
     .then(voyage => console.log("Trip Found :", voyage))
     .catch(err => console.log(err));
 
-const parixPrixVoyage$ = new PriceService();
-parixPrixVoyage$.findPriceByTripId("paris")
-    .then(price => console.log("Price Found : ", price))
+// Recherche des infos et du prix du voyage à Rio de Janeiro
+const rioVoyage$ = new TripService();
+const rioPrice$ = new PriceService();
+
+rioVoyage$.findByName("Rio de Janeiro")
+    .then(voyage => console.log("Trip Found :", voyage))
+    .catch(err => console.log(err));
+
+rioVoyage$.findByName("Rio de Janeiro")
+    .then(trip => trip.id)
+    .then(id => rioPrice$.findPriceByTripId(id))
+    .then(price => console.log("Price Found :", price))
     .catch(err => console.log(err));
